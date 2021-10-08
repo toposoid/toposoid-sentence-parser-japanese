@@ -4,6 +4,8 @@ Then, it outputs the information necessary for converting to a knowledge graph.
 This library is mainly used by Toposoid developer in Toposoid projects.
 Toposoid is a knowledge base construction platform.(see [Toposoid　Root Project](https://github.com/toposoid/toposoid.git))
 
+[![Unit Test Action](https://github.com/toposoid/toposoid-sentence-parser/actions/workflows/action.yml/badge.svg?branch=main)](https://github.com/toposoid/toposoid-sentence-parser/actions/workflows/action.yml)
+
 ## Requirements
 Scala version 2.12.x,   
 Sbt version 1.2.8
