@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ideal.linked.toposoid.sentence.parser
+package com.ideal.linked.toposoid.sentence.parser.japanese
 
 import com.enjapan.juman.models.Morpheme
 import com.enjapan.knp.KNPCli

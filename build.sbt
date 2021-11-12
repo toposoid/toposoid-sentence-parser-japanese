@@ -9,7 +9,7 @@ scalacOptions += "-Ypartial-unification"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "toposoid-sentence-parser",
+    name := "toposoid-sentence-parser-japanese",
     libraryDependencies ++= Seq(
       "com.enjapan" %% "scala-juman-knp" % "0.0.10-SNAPSHOT",
       "org.typelevel" %% "cats-core" % "0.8.1"
