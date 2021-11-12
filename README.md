@@ -1,10 +1,9 @@
-# toposoid-sentence-parser
+# toposoid-sentence-parser-japanese
 This component performs predicate argument structure analysis when a Japanese sentence is given as input.
 Then, it outputs the information necessary for converting to a knowledge graph.
 This library is mainly used by Toposoid developer in Toposoid projects.
 Toposoid is a knowledge base construction platform.(see [Toposoid　Root Project](https://github.com/toposoid/toposoid.git))
 
-[![Unit Test Action](https://github.com/toposoid/toposoid-sentence-parser/actions/workflows/action.yml/badge.svg?branch=main)](https://github.com/toposoid/toposoid-sentence-parser/actions/workflows/action.yml)
 
 ## Requirements
 Scala version 2.12.x,   
@@ -22,14 +21,15 @@ sbt publishLocal
 For example
 For more information on the output, see https://github.com/toposoid/toposoid-knowledgebase-model.
 Especially with KnowledgeBaseNode And KnowledgeBase Edge are important
+
 ```scala
-import com.ideal.linked.toposoid.sentence.parser.SentenceParser
+
 val o = SentenceParser.parse("太郎は本を買いました")
-for(element <- o._1){
+for (element <- o._1) {
   println(element)
 }
 
-for(element <- o._2){
+for (element <- o._2) {
   println(element)
 }
 ```

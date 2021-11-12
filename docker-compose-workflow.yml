@@ -1,5 +1,5 @@
 version: '3'
 services:
-  toposoid-sentence-parser:
-    image: toposoid-sentence-parser:0.1.0
+  toposoid-sentence-parser-japanese:
+    image: toposoid-sentence-parser-japanese:0.1.0
     tty: true

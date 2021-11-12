@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ideal.linked.toposoid.sentence.parser
+package com.ideal.linked.toposoid.sentence.parser.japanese
 
 import com.ideal.linked.toposoid.knowledgebase.model.KnowledgeBaseNode
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, DiagrammedAssertions, FlatSpec}
