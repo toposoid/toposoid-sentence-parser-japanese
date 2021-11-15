@@ -2,21 +2,27 @@ FROM toposoid/scala-knp:2.12.12-4.19
 
 WORKDIR /app
 ARG TARGET_BRANCH
-
 ENV DEPLOYMENT=local
+ENV _JAVA_OPTIONS="-Xms2g -Xmx4g"
 
 RUN apt-get update \
 && apt-get -y install git \
 && git clone https://github.com/toposoid/scala-common.git \
 && cd scala-common \
+&& git fetch origin ${TARGET_BRANCH} \
+&& git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
 && cd .. \
 && git clone https://github.com/toposoid/toposoid-common.git \
 && cd toposoid-common \
+&& git fetch origin ${TARGET_BRANCH} \
+&& git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
 && cd .. \
 && git clone https://github.com/toposoid/toposoid-knowledgebase-model.git \
 && cd toposoid-knowledgebase-model \
+&& git fetch origin ${TARGET_BRANCH} \
+&& git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
 && cd .. \
 && git clone https://github.com/toposoid/scala-juman-knp.git \
@@ -26,5 +32,5 @@ RUN apt-get update \
 && cd .. \
 && git clone https://github.com/toposoid/toposoid-sentence-parser-japanese.git \
 && cd toposoid-sentence-parser-japanese \
-#&& git checkout -b ${TARGET_BRANCH} origin/${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
+&& git fetch origin ${TARGET_BRANCH} \
+&& git checkout ${TARGET_BRANCH}
