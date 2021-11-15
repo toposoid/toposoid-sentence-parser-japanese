@@ -8,7 +8,7 @@ on:
 env:
   PJ_ACTOR: toposoid
   PJ_REPO: toposoid-sentence-parser-japanese
-  PJ_BRANCH: main
+  PJ_BRANCH: feature
   PJ_VERSION: 0.1.1
 jobs:
   unit-test_toposoid-sentence-parser-japanese:
