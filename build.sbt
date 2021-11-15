@@ -1,7 +1,7 @@
 import Dependencies._
 
 ThisBuild / scalaVersion     := "2.12.12"
-ThisBuild / version          := "0.1.0"
+ThisBuild / version          := "0.1.1"
 ThisBuild / organization     := "com.ideal.linked"
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full)
