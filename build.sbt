@@ -1,7 +1,7 @@
 import Dependencies._
 
 ThisBuild / scalaVersion     := "2.12.12"
-ThisBuild / version          := "0.1.1"
+ThisBuild / version          := "0.1-SNAPSHOT"
 ThisBuild / organization     := "com.ideal.linked"
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full)
@@ -15,7 +15,7 @@ lazy val root = (project in file("."))
       "org.typelevel" %% "cats-core" % "0.8.1"
     ),
     dependencyOverrides += "org.typelevel" %% "cats-core" % "0.8.1",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.1.0",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.1-SNAPSHOT",
     libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.1.0",
     libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.1.1",
     libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
