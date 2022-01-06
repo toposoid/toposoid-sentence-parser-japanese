@@ -20,6 +20,7 @@ lazy val root = (project in file("."))
     libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.1-SNAPSHOT",
     libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
     libraryDependencies += "com.typesafe.play" %% "play" % "2.8.8",
+    libraryDependencies += "com.ibm.icu" % "icu4j" % "63.1",
     libraryDependencies += scalaTest % Test
   )
   .enablePlugins(AutomateHeaderPlugin)

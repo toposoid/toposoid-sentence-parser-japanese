@@ -19,6 +19,7 @@ package com.ideal.linked.toposoid.sentence.parser.japanese
 import com.enjapan.juman.models.Morpheme
 import com.enjapan.knp.KNPCli
 import com.enjapan.knp.models.{BList, Bunsetsu, Tag}
+import com.ibm.icu.text.Transliterator
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
 
 import scala.util.{Failure, Success, Try}
@@ -49,7 +50,8 @@ object SentenceParser extends LazyLogging {
 
     clear()
     val propositionId:String = UUID.random.toString
-    val blist = knp(sentence)
+    val transliterator = Transliterator.getInstance("Halfwidth-Fullwidth")
+    val blist = knp(transliterator.transliterate(sentence))
     val knpResult = blist.getOrElse("").asInstanceOf[BList]
     bunsetsuNum = knpResult.bunsetsuList.size
     knpResult.root.traverse(analyze(_, propositionId))
