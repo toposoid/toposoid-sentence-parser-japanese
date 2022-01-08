@@ -19,6 +19,7 @@ package com.ideal.linked.toposoid.sentence.parser.japanese
 import com.enjapan.juman.models.Morpheme
 import com.enjapan.knp.KNPCli
 import com.enjapan.knp.models.{BList, Bunsetsu, Tag}
+import com.ibm.icu.text.Transliterator
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
 
 import scala.util.{Failure, Success, Try}
@@ -49,7 +50,8 @@ object SentenceParser extends LazyLogging {
 
     clear()
     val propositionId:String = UUID.random.toString
-    val blist = knp(sentence)
+    val transliterator = Transliterator.getInstance("Halfwidth-Fullwidth")
+    val blist = knp(transliterator.transliterate(sentence))
     val knpResult = blist.getOrElse("").asInstanceOf[BList]
     bunsetsuNum = knpResult.bunsetsuList.size
     knpResult.root.traverse(analyze(_, propositionId))
@@ -133,7 +135,8 @@ object SentenceParser extends LazyLogging {
       node.surfaceYomi,
       node.modalityType,
       node.logicType,
-      nodeType)
+      nodeType,
+      "ja_JP")
     nodes = nodes.updated(node.nodeId,replaceNode)
   }
 
@@ -308,10 +311,10 @@ object SentenceParser extends LazyLogging {
     }
 
     //nodeTypeは全てのノードが確定するまで決められないので、一旦-1をセットしておく
-    val node = KnowledgeBaseNode(nodeId, propositionId, currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType, namedEntity, rangeExpressions, categories, domains, isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1)
+    val node = KnowledgeBaseNode(nodeId, propositionId, currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType, namedEntity, rangeExpressions, categories, domains, isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, "ja_JP")
     val sourceId = nodeId
     val destinationId = propositionId + "-" + x.parentId.toString
-    val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType)
+    val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType, "ja_JP")
     nodes  = nodes.updated(nodeId, node)
     //述語項構造解析の結果として文章が区切れる場合（文末から文末への関係がある場合）は、エッジを作成しない。
     if(x.parentId != -1 && caseType != "文末") edges :+=  edge

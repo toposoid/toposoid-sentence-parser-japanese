@@ -261,4 +261,13 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
     assert(o._2.filter(_.caseStr.equals("文末")).size == 0)
 
   }
+
+  "株式会社ｱｲｳｴｵは２０００年４月１５日に４０００万円をある企業に支払った。"should "analyze correctly" in {
+    //NERのチェック
+    val o = SentenceParser.parse("株式会社ｱｲｳｴｵは２０００年４月１５日に４０００万円をある企業に支払った。")
+    val ne: String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.namedEntity }
+    assert(ne == "ORGANIZATION:株式会社アイウエオDATE:２０００年４月１５日MONEY:４０００万円")
+  }
+
+
 }
