@@ -269,5 +269,11 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
     assert(ne == "ORGANIZATION:株式会社アイウエオDATE:２０００年４月１５日MONEY:４０００万円")
   }
 
+  "主張１はファクト１２３４より正しい。"should "analyze correctly" in {
+    //正規化表現の特別な場合のチェック
+    val o = SentenceParser.parse("主張１はファクト１２３４より正しい。")
+    assert(o._1.filter(x =>  x._2.normalizedName == "主張１" || x._2.normalizedName == "ファクト１２３４").size == 2)
+
+  }
 
 }
