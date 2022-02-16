@@ -279,7 +279,7 @@ object SentenceParser extends LazyLogging {
   }
 
   /**
-   *
+   * Care for cases where numbers should be included in the normalized expression
    * @param morphemes
    * @param normalizeName
    * @return
