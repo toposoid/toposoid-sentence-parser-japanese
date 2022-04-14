@@ -129,7 +129,7 @@ object SentenceParser extends LazyLogging {
       node.rangeExpressions,
       node.categories,
       node.domains,
-      node.isDenial,
+      node.isDenialWord,
       node.isConditionalConnection,
       node.normalizedNameYomi,
       node.surfaceYomi,

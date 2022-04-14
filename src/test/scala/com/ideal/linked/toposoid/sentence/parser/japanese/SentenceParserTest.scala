@@ -47,7 +47,7 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
   "太郎は花子に借りた本を返さなかった。" should "analyze correctly" in {
     //否定文を認識できるか
     val o = SentenceParser.parse("太郎は花子に借りた本を返さなかった。")
-    val denialExpression = o._1.filter(x => x._2.isDenial).head._2.surface
+    val denialExpression = o._1.filter(x => x._2.isDenialWord).head._2.surface
     assert(denialExpression.equals("返さなかった。"))
     //主張の中の基本的な格構造（ 主語、目的語、補語）を認識できているか？
     val sentence:String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.surface }
