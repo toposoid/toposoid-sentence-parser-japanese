@@ -129,7 +129,7 @@ object SentenceParser extends LazyLogging {
       node.rangeExpressions,
       node.categories,
       node.domains,
-      node.isDenial,
+      node.isDenialWord,
       node.isConditionalConnection,
       node.normalizedNameYomi,
       node.surfaceYomi,
@@ -279,6 +279,21 @@ object SentenceParser extends LazyLogging {
   }
 
   /**
+   * Care for cases where numbers should be included in the normalized expression
+   * @param morphemes
+   * @param normalizeName
+   * @return
+   */
+  private def getNormalizeName(morphemes: List[Morpheme], normalizeName:String): String ={
+    if(morphemes.filter(_.bunrui == "数詞").size == 0) {
+      normalizeName
+    }else{
+      morphemes.filter(x => x.hinsi=="名詞").foldLeft(""){ (acc, x) => acc +  x.genkei}
+    }
+  }
+
+
+  /**
    * Predicate argument structure analysis.
    * @param x
    * @param propositionId
@@ -290,7 +305,7 @@ object SentenceParser extends LazyLogging {
     val nodeId = propositionId + "-" + currentId.toString
     val surface = x.tags.foldLeft(""){(acc, x) => acc + x.surface}
     val surfaceYomi = x.tags.foldLeft(""){(acc, x) => acc + x.morphemes.foldLeft(""){(acc2, y) => acc2 + y.yomi }}
-    val normalizedName = x.features.get("正規化代表表記").getOrElse("-").split("/")(0)
+    val normalizedName = this.getNormalizeName(x.tags.map(_.morphemes).head, x.features.get("正規化代表表記").getOrElse("-").split("/")(0))
     val isMainSection = x.features.isDefinedAt("主節")
     val caseType = x.features.get("係").getOrElse("-")
     val namedEntity = x.tags.foldLeft(""){(acc, x)=> acc + x.features.get("NE").getOrElse("")}
