@@ -29,7 +29,7 @@ import com.typesafe.scalalogging.LazyLogging
 import io.jvm.uuid.UUID
 
 /**
- * This module takes a sentence as input and returns the result of predicate argument structure analysis.
+ * This module takes a japanese sentence as input and returns the result of predicate argument structure analysis.
  */
 object SentenceParser extends LazyLogging {
 
@@ -161,68 +161,6 @@ object SentenceParser extends LazyLogging {
   }
 
   /**
-   * Setting of quantity representation
-   * @param tag
-   * @return
-   */
-  private def findQuantity(tag:Tag): String= {
-    if(tag.features.get("NE").getOrElse("").startsWith("DATE") || tag.features.get("NE").getOrElse("").startsWith("TIME")){
-      tag.features.get("NE").getOrElse("").split(":")(1)
-    }else if(tag.morphemes.filter(_.bunrui == "数詞").size > 0) {
-      tag.morphemes.filter(_.bunrui == "数詞").head.genkei
-    }else if(tag.features.isDefinedAt("数量")){
-      tag.features.get("数量").getOrElse("")
-    }else{
-      ""
-    }
-  }
-
-  /**
-   * Setting of unit representation
-   * @param tag
-   * @return
-   */
-  private def findUnit(tag:Tag): String = {
-    if(tag.features.isDefinedAt("カウンタ")){
-      return tag.features.get("カウンタ").getOrElse("")
-    }
-    ""
-  }
-
-  /**
-   * Setting of range representation
-   * @param tag
-   * @return
-   */
-  private def findRange(tag:Tag): String = {
-    if(tag.morphemes.filter(( m :Morpheme ) =>List("以上", "以下", "未満", "超過", "以内").contains(m.genkei)).size > 0){
-      tag.morphemes.filter(( m :Morpheme ) =>List("以上", "以下", "未満", "超過", "以内").contains(m.genkei)).head.genkei
-    }else if(tag.morphemes.filter(( m :Morpheme ) =>List("から", "より", "まで").contains(m.genkei) && m.bunrui.equals("格助詞")).size > 0){
-      tag.morphemes.filter(( m :Morpheme ) =>List("から", "より", "まで").contains(m.genkei)).head.genkei
-    }else{
-      ""
-    }
-  }
-
-  /**
-   * Setting of range expressions
-   * @param tag
-   * @return
-   */
-  private def getRangeExpressions(tag: Tag): (String, Map[String, String]) = Try{
-    //カウンタがなく、数量だけもある
-    if(!tag.features.isDefinedAt("数量")) return ("", Map.empty[String, String])
-    val quantity = this.findQuantity(tag)
-    val unit = this.findUnit(tag)
-    val range = this.findRange(tag)
-    (tag.features.get("正規化代表表記").getOrElse("-").split("/")(0), Map("quantity" -> quantity, "unit" -> unit, "range" -> range))
-
-  }match {
-    case Success(s) => s
-    case Failure(e) => throw e
-  }
-
-  /**
    * Setting of modality expression
    * @param features
    * @return
@@ -308,8 +246,8 @@ object SentenceParser extends LazyLogging {
     val normalizedName = this.getNormalizeName(x.tags.map(_.morphemes).head, x.features.get("正規化代表表記").getOrElse("-").split("/")(0))
     val isMainSection = x.features.isDefinedAt("主節")
     val caseType = x.features.get("係").getOrElse("-")
-    val namedEntity = x.tags.foldLeft(""){(acc, x)=> acc + x.features.get("NE").getOrElse("")}
-    val rangeExpressions = x.tags.map(getRangeExpressions).map(arr => arr._1 -> arr._2).toMap
+    val namedEntity = x.tags.foldLeft(""){(acc, x)=> acc + x.features.get("NE").getOrElse("").split(":").head}
+    val rangeExpressions = QuantityAnalyzer.getRangeExpression(x.tags, namedEntity)
     val categories = x.tags.map(getCategoryOrDomain(_, "カテゴリ")).map(arr => arr._1 -> arr._2).toMap
     val domains = x.tags.map(getCategoryOrDomain(_, "ドメイン")).map(arr => arr._1 -> arr._2).toMap
     val isDenial:Boolean = x.features.isDefinedAt("否定表現")
