@@ -21,24 +21,21 @@ import com.enjapan.knp.KNPCli
 import com.enjapan.knp.models.{BList, Bunsetsu, Tag}
 import com.ibm.icu.text.Transliterator
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
-
-import scala.util.{Failure, Success, Try}
-import com.ideal.linked.toposoid.knowledgebase.model.KnowledgeBaseNode
-import com.ideal.linked.toposoid.knowledgebase.model.KnowledgeBaseEdge
+import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode}
 import com.typesafe.scalalogging.LazyLogging
 import io.jvm.uuid.UUID
+
+import scala.util.{Failure, Success, Try}
+
+
+case class SentenceParserResult(nodes:Map[String, KnowledgeBaseNode], edges:List[KnowledgeBaseEdge], index:Int, bunsetsuNum:Int)
 
 /**
  * This module takes a japanese sentence as input and returns the result of predicate argument structure analysis.
  */
 object SentenceParser extends LazyLogging {
 
-  var index:Int = 1
-  var nodes: Map[String, KnowledgeBaseNode] = Map.empty[String,KnowledgeBaseNode]
-  var edges: List[KnowledgeBaseEdge]= List.empty[KnowledgeBaseEdge]
-  var bunsetsuNum = 0
   val knp = new KNPCli()
-
   /**
    * Main function of this module　
    * @param sentence
@@ -48,28 +45,16 @@ object SentenceParser extends LazyLogging {
    */
   def parse(sentence:String):(Map[String, KnowledgeBaseNode], List[KnowledgeBaseEdge]) =Try {
 
-    clear()
     val propositionId:String = UUID.random.toString
     val transliterator = Transliterator.getInstance("Halfwidth-Fullwidth")
     val blist = knp(transliterator.transliterate(sentence))
     val knpResult = blist.getOrElse("").asInstanceOf[BList]
-    bunsetsuNum = knpResult.bunsetsuList.size
-    knpResult.root.traverse(analyze(_, propositionId))
-    classify()
-    (nodes, edges)
-  }match {
-    case Success(s) => s
-    case Failure(e) => throw e
-  }
 
-  /**
-   * Initialization of variables that store results
-   */
-  private def clear():Unit = Try{
-    nodes = Map.empty[String,KnowledgeBaseNode]
-    edges = List.empty[KnowledgeBaseEdge]
-    index = 1
-    bunsetsuNum =0
+    val initSentenceParserResult = SentenceParserResult(Map.empty[String, KnowledgeBaseNode], List.empty[KnowledgeBaseEdge], 1, bunsetsuNum = knpResult.bunsetsuList.size)
+    val sentenceParserResult:SentenceParserResult = knpResult.bunsetsuList.reverse.foldLeft(initSentenceParserResult) {
+      (acc, x) => analyze(x, propositionId, acc)
+    }
+    (classify(sentenceParserResult), sentenceParserResult.edges)
   }match {
     case Success(s) => s
     case Failure(e) => throw e
@@ -78,22 +63,35 @@ object SentenceParser extends LazyLogging {
   /**
    * Determination of node type (premise/claim)
    */
-  private def classify(): Unit ={
+  private def classify(spr:SentenceParserResult): Map[String, KnowledgeBaseNode] ={
     //ノードに一つもisConditionalConnection=Trueがなければ、全てClaimNode。一旦、全てClaimノードにしてしまう。
-    for(node <- nodes){
-      replaceKnowledgeBaseNode(node._2, CLAIM.index)
-    }
-    val conditionalConnectionNodes = nodes.filter(_._2.isConditionalConnection)
-    //複数の節が前提となる場合も考慮する。
-    if(conditionalConnectionNodes.size > 0){
-      //ノードにisConditionalConnection=Trueがあれば、そこから有効グラフが逆向きに向かって末端まではPremiseNode
-      for(conditionalConnectionNode <- conditionalConnectionNodes.values){
-        val selectedInitialEdges:List[KnowledgeBaseEdge] = edges.filter(_.destinationId == conditionalConnectionNode.nodeId)
-        //PremiseNode群の起点となるノードを置換
-        replaceKnowledgeBaseNode(conditionalConnectionNode, PREMISE.index)
-        selectedInitialEdges.map(replacePremiseNode(_))
+    val tmpNodes:Map[String, KnowledgeBaseNode] = spr.nodes.foldLeft(spr.nodes){
+      (acc, x) => {
+        replaceKnowledgeBaseNode(x._2, CLAIM.index, acc)
       }
     }
+    val updateSpr = SentenceParserResult(tmpNodes, spr.edges, spr.index, spr.bunsetsuNum)
+    val conditionalConnectionNodes = tmpNodes.filter(_._2.isConditionalConnection)
+    //複数の節が前提となる場合も考慮する。
+    conditionalConnectionNodes.size > 0 match {
+      case true => {
+        conditionalConnectionNodes.values.foldLeft(tmpNodes) {
+          (acc, x) => {
+            val selectedInitialEdges: List[KnowledgeBaseEdge] = updateSpr.edges.filter(_.destinationId == x.nodeId)
+            val tmpNodes2:Map[String, KnowledgeBaseNode] = replaceKnowledgeBaseNode(x, PREMISE.index, acc)
+            val tmpNode3 = selectedInitialEdges.foldLeft(tmpNodes2){
+              (acc2, y) =>{
+                val updateSpr2 = SentenceParserResult(acc2, spr.edges, spr.index, spr.bunsetsuNum)
+                replacePremiseNode(y, updateSpr2)
+              }
+            }
+            acc ++ tmpNode3
+          }
+        }
+      }
+      case _ => tmpNodes
+    }
+    //classifiedNodes
   }
 
   /**
@@ -101,12 +99,23 @@ object SentenceParser extends LazyLogging {
    * This function is a recursive function
    * @param premiseEdge
    */
-  private def replacePremiseNode(premiseEdge:KnowledgeBaseEdge): Unit ={
-    replaceKnowledgeBaseNode(nodes.get(premiseEdge.sourceId).head, PREMISE.index)
-    val selectedPremiseEdges:List[KnowledgeBaseEdge] = edges.filter(_.destinationId == premiseEdge.sourceId)
-    if(selectedPremiseEdges.size > 0){
-      selectedPremiseEdges.map(replacePremiseNode(_))
+  private def replacePremiseNode(premiseEdge:KnowledgeBaseEdge, spr:SentenceParserResult): Map[String, KnowledgeBaseNode] ={
+    val replaceNodes = replaceKnowledgeBaseNode(spr.nodes.get(premiseEdge.sourceId).head, PREMISE.index, spr.nodes)
+    val selectedPremiseEdges:List[KnowledgeBaseEdge] = spr.edges.filter(_.destinationId == premiseEdge.sourceId)
+
+    selectedPremiseEdges.size > 0 match {
+      case true => {
+        val updatedSentenceParserResult = SentenceParserResult(replaceNodes, spr.edges, spr.index, spr.bunsetsuNum)
+        selectedPremiseEdges.foldLeft(replaceNodes){ (acc, x) => {
+          val premiseNodes :Map[String, KnowledgeBaseNode] = replacePremiseNode(x, updatedSentenceParserResult).filter(_._2.nodeType == 0)
+          premiseNodes.foldLeft(acc){(acc2, y) => {
+            acc2 ++ Map(y._1 -> y._2)
+          }}
+        }}
+      }
+      case _ => replaceNodes
     }
+
   }
 
   /**
@@ -114,7 +123,7 @@ object SentenceParser extends LazyLogging {
    * @param node
    * @param nodeType
    */
-  private def replaceKnowledgeBaseNode(node:KnowledgeBaseNode, nodeType:Int): Unit ={
+  private def replaceKnowledgeBaseNode(node:KnowledgeBaseNode, nodeType:Int, nodes:Map[String, KnowledgeBaseNode]): Map[String, KnowledgeBaseNode] ={
     val replaceNode =  KnowledgeBaseNode(
       node.nodeId,
       node.propositionId,
@@ -137,7 +146,7 @@ object SentenceParser extends LazyLogging {
       node.logicType,
       nodeType,
       "ja_JP")
-    nodes = nodes.updated(node.nodeId,replaceNode)
+    nodes.updated(node.nodeId,replaceNode)
   }
 
 
@@ -236,10 +245,10 @@ object SentenceParser extends LazyLogging {
    * @param x
    * @param propositionId
    */
-  private def analyze(x: Bunsetsu, propositionId :String): Unit = Try{
+  private def analyze(x: Bunsetsu, propositionId :String, spr:SentenceParserResult): SentenceParserResult = Try{
 
-    val currentId = bunsetsuNum - index
-    index += 1
+    val currentId = spr.bunsetsuNum - spr.index
+    //index += 1
     val nodeId = propositionId + "-" + currentId.toString
     val surface = x.tags.foldLeft(""){(acc, x) => acc + x.surface}
     val surfaceYomi = x.tags.foldLeft(""){(acc, x) => acc + x.morphemes.foldLeft(""){(acc2, y) => acc2 + y.yomi }}
@@ -268,20 +277,18 @@ object SentenceParser extends LazyLogging {
     val sourceId = nodeId
     val destinationId = propositionId + "-" + x.parentId.toString
     val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType, "ja_JP")
-    nodes  = nodes.updated(nodeId, node)
+    val nodes  = spr.nodes.updated(nodeId, node)
     //述語項構造解析の結果として文章が区切れる場合（文末から文末への関係がある場合）は、エッジを作成しない。
-    if(x.parentId != -1 && caseType != "文末") edges :+=  edge
-
+    val edges:List[KnowledgeBaseEdge] = x.parentId != -1 && caseType != "文末" match  {
+      case true => spr.edges :+ edge
+      case _ => spr.edges
+    }
+    //if(x.parentId != -1 && caseType != "文末") edges :+=  edge
+    SentenceParserResult(nodes, edges, spr.index + 1, spr.bunsetsuNum)
   }match {
     case Success(s) => s
     case Failure(e) => throw e
   }
 
-  for(node <- nodes) {
-    println(node)
-  }
-  for(edge <- edges) {
-    println(edge)
-  }
 
 }
