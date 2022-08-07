@@ -63,7 +63,7 @@ object UnitConverter {
     }else if (unit.equals("オングストローム") || unit.equals("\u212B")) {
       ExUnits.ANGSTROEM.getName
     }else if (unit.equals("平方メートル") || unit.equals("平米") || unit.equals("ｍ\u00B2")) {
-      Units.SQUARE_METRE.getName
+      ExUnits.SQUARE_METRE.getName
     }else if (unit.equals("アール") || unit.equals("ａ")) {
       ExUnits.ARE.getName
     }else if (unit.equals("ヘクタール") || unit.equals("ｈａ")) {
@@ -73,7 +73,7 @@ object UnitConverter {
     }else if (unit.equals("坪")) {
       ExUnits.TSUBO.getName
     }else if (unit.equals("立方メートル") || unit.equals("立米") || unit.equals("\u33A5")) {
-      Units.CUBIC_METRE.getName
+      ExUnits.CUBIC_METRE.getName
     }else if (unit.equals("リットル") || unit.equals("ｌ") || unit.equals("Ｌ") || unit.equals("l")) {
       Units.LITRE.getName
     }else if (unit.equals("ガロン") || unit.equals("ｇａｌ")) {
