@@ -52,9 +52,18 @@ object DateConverter {
       case dateYearMonthDay(g, y, m, d) => (g, y, m, d)
       case _ => ("", "", "", "")
     }
-    val year = KansujiConverter.toArabicNumerals(dateTuple._2)
-    val month = KansujiConverter.toArabicNumerals(dateTuple._3)
-    val day = KansujiConverter.toArabicNumerals(dateTuple._4)
+    val year = KansujiConverter.toArabicNumerals(dateTuple._2) match {
+      case "0" => ""
+      case x => x
+    }
+    val month = KansujiConverter.toArabicNumerals(dateTuple._3) match {
+      case "0" => ""
+      case x => x
+    }
+    val day = KansujiConverter.toArabicNumerals(dateTuple._4) match{
+      case "0" => ""
+      case x => x
+    }
     this.convertYMD(dateTuple._1, year, month, day)
   }
 
@@ -68,8 +77,27 @@ object DateConverter {
    */
   private def convertYMD(gengou:String, yearStr:String, monthStr:String, dayStr:String): String = {
 
-    if(gengou.equals("") || yearStr.equals("")) return "%s-%s-%s".format(yearStr, monthStr, dayStr)
+    //年がないパターン
+    if(!NumberUtils.isNumber(yearStr) && !yearStr.equals("元") ){
+      if(NumberUtils.isNumber(monthStr)){
+          if(NumberUtils.isNumber(dayStr)){
+            //MM-DD
+            return "%02d-%02d".format(monthStr.toInt, dayStr.toInt)
+          }else{
+            //MM
+            return "%02d".format(monthStr.toInt)
+          }
+      }else{
+        if(NumberUtils.isNumber(dayStr)){
+          //DD
+          return "%02d".format(dayStr.toInt)
+        }else{
+          return ""
+        }
+      }
+    }
 
+    //年があるパターン
     val era = gengou match {
       case "令和" => JapaneseEra.valueOf("Reiwa")
       case "平成" => JapaneseEra.HEISEI
@@ -92,9 +120,18 @@ object DateConverter {
       case _ => dayStr
     }
 
-    if(!NumberUtils.isNumber(year) || !NumberUtils.isNumber(month) || !NumberUtils.isNumber(day)) return "%s%s-%s-%s".format(gengou, yearStr, monthStr, dayStr)
     val convertYear = JapaneseDate.of(era, year.toInt, month.toInt, day.toInt).format(DateTimeFormatter.ISO_DATE).split("-")(0)
-    "%s-%s-%s".format(convertYear, monthStr, dayStr)
-
+    if(NumberUtils.isNumber(monthStr)){
+      if(NumberUtils.isNumber(dayStr)){
+        //YYYY-MM-DD
+        "%04d-%02d-%02d".format(convertYear.toInt, monthStr.toInt, dayStr.toInt)
+      }else{
+        //YYYY-MM-
+        "%04d-%02d".format(convertYear.toInt, monthStr.toInt)
+      }
+    }else{
+      //YYYY
+      "%04d".format(convertYear.toInt)
+    }
   }
 }

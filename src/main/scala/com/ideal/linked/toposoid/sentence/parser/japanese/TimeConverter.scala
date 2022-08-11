@@ -59,7 +59,7 @@ object TimeConverter {
         case _ => hour
       }
     }
-    "%s:%s:%s".format(convertHour, min, sec)
+    "%02d:%02d:%02d".format(convertHour.toInt, min.toInt, sec.toInt)
   }
 }
 

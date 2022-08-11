@@ -81,6 +81,9 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
   }
 
 
+  //TODO:通常の西暦のパターンで　YYYYYYMMDD YYYYMM MMDD YYYY, MM,DD などのパターン
+
+
   "その期限は、平成十年三月三十一日から令和元年5月1日までです。"should "analyze correctly" in {
     val o = SentenceParser.parse("その期限は、平成十年三月三十一日から令和元年5月1日までです。")
     val hoge = o._1.map(x => x._2.rangeExpressions)
@@ -91,12 +94,12 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
         case "1998-3-31" => {
           assert(x.get("prefix").get.equals(""))
           assert(x.get("unit").get.equals("Day"))
-          assert(x.get("range").get.equals(">1998-3-31"))
+          assert(x.get("range").get.equals(">1998-03-31"))
         }
         case "2019-5-1" => {
           assert(x.get("prefix").get.equals(""))
           assert(x.get("unit").get.equals("Day"))
-          assert(x.get("range").get.equals("<2019-5-1"))
+          assert(x.get("range").get.equals("<2019-05-01"))
         }
         case _ => assert(true)
       }
