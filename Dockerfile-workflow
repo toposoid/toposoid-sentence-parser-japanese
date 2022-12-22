@@ -25,6 +25,13 @@ RUN apt-get update \
 && git checkout ${TARGET_BRANCH} \
 && sbt publishLocal \
 && cd .. \
+&& git clone https://github.com/toposoid/toposoid-deduction-protocol-model.git \
+&& cd toposoid-deduction-protocol-model \
+&& git fetch origin ${TARGET_BRANCH} \
+&& git checkout ${TARGET_BRANCH} \
+&& sbt publishLocal \
+&& rm -Rf ./target \
+&& cd .. \
 && git clone https://github.com/toposoid/scala-juman-knp.git \
 && cd scala-juman-knp \
 && git checkout scala-2.12-support \
