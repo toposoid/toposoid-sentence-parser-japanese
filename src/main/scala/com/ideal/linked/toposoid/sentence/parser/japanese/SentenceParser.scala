@@ -22,6 +22,7 @@ import com.enjapan.knp.models.{BList, Bunsetsu, Tag}
 import com.ibm.icu.text.Transliterator
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
 import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode}
+import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import com.typesafe.scalalogging.LazyLogging
 import io.jvm.uuid.UUID
 
@@ -38,21 +39,23 @@ object SentenceParser extends LazyLogging {
   val knp = new KNPCli()
   /**
    * Main function of this module　
-   * @param sentence
+   * @param knowledgeForParser
    * @return (nodes:Map[String:KnowledgeBaseNode], edges:List[KnowledgeBaseEdge]
    *         The key for nodes is the nodeId of KnowledgeBaseNode.
    *         For KnowledgeBaseNode and KnowledgeBaseEdge, see the com.ideal.linked.toposoid.knowledgebase.model package.
    */
-  def parse(sentence:String):(Map[String, KnowledgeBaseNode], List[KnowledgeBaseEdge]) =Try {
+  def parse(knowledgeForParser:KnowledgeForParser):(Map[String, KnowledgeBaseNode], List[KnowledgeBaseEdge]) =Try {
 
-    val propositionId:String = UUID.random.toString
+    val propositionId:String = knowledgeForParser.propositionId
+    val sentenceId:String = knowledgeForParser.sentenceId
+    val lang:String = knowledgeForParser.knowledge.lang
     val transliterator = Transliterator.getInstance("Halfwidth-Fullwidth")
-    val blist = knp(transliterator.transliterate(sentence))
+    val blist = knp(transliterator.transliterate(knowledgeForParser.knowledge.sentence))
     val knpResult = blist.getOrElse("").asInstanceOf[BList]
 
     val initSentenceParserResult = SentenceParserResult(Map.empty[String, KnowledgeBaseNode], List.empty[KnowledgeBaseEdge], 1, bunsetsuNum = knpResult.bunsetsuList.size)
     val sentenceParserResult:SentenceParserResult = knpResult.bunsetsuList.reverse.foldLeft(initSentenceParserResult) {
-      (acc, x) => analyze(x, propositionId, acc)
+      (acc, x) => analyze(x, propositionId, sentenceId, lang, acc)
     }
     (classify(sentenceParserResult), sentenceParserResult.edges)
   }match {
@@ -245,11 +248,11 @@ object SentenceParser extends LazyLogging {
    * @param x
    * @param propositionId
    */
-  private def analyze(x: Bunsetsu, propositionId :String, spr:SentenceParserResult): SentenceParserResult = Try{
+  private def analyze(x: Bunsetsu, propositionId :String, sentenceId:String, lang:String, spr:SentenceParserResult): SentenceParserResult = Try{
 
     val currentId = spr.bunsetsuNum - spr.index
     //index += 1
-    val nodeId = propositionId + "-" + currentId.toString
+    val nodeId = sentenceId + "-" + currentId.toString
     val surface = x.tags.foldLeft(""){(acc, x) => acc + x.surface}
     val surfaceYomi = x.tags.foldLeft(""){(acc, x) => acc + x.morphemes.foldLeft(""){(acc2, y) => acc2 + y.yomi }}
     val normalizedName = this.getNormalizeName(x.tags.map(_.morphemes).head, x.features.get("正規化代表表記").getOrElse("-").split("/")(0))
@@ -273,10 +276,10 @@ object SentenceParser extends LazyLogging {
     }
 
     //nodeTypeは全てのノードが確定するまで決められないので、一旦-1をセットしておく
-    val node = KnowledgeBaseNode(nodeId, propositionId, currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType, namedEntity, rangeExpressions, categories, domains, isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, "ja_JP")
+    val node = KnowledgeBaseNode(nodeId, propositionId, currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType, namedEntity, rangeExpressions, categories, domains, isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, lang)
     val sourceId = nodeId
-    val destinationId = propositionId + "-" + x.parentId.toString
-    val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType, "ja_JP")
+    val destinationId = sentenceId + "-" + x.parentId.toString
+    val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType, lang)
     val nodes  = spr.nodes.updated(nodeId, node)
     //述語項構造解析の結果として文章が区切れる場合（文末から文末への関係がある場合）は、エッジを作成しない。
     val edges:List[KnowledgeBaseEdge] = x.parentId != -1 && caseType != "文末" match  {
