@@ -15,12 +15,16 @@
  */
 
 package com.ideal.linked.toposoid.sentence.parser.japanese
+import com.ideal.linked.toposoid.knowledgebase.regist.model.Knowledge
+import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, DiagrammedAssertions, FlatSpec}
+import io.jvm.uuid.UUID
 
 class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with BeforeAndAfter with BeforeAndAfterAll{
 
   "彼の体重は推定、60kgから八十キログラムの間です。"should "analyze correctly" in {
-    val o = SentenceParser.parse("彼の体重は推定、60kgから八十キログラム未満です。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の体重は推定、60kgから八十キログラム未満です。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get.toInt match  {
@@ -40,7 +44,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
   }
 
   "彼の体重は60kgより多く八十キログラムより少ないはずです。"should "analyze correctly" in {
-    val o = SentenceParser.parse("彼の体重は60kgより多く八十キログラムより少ないはずです。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の体重は60kgより多く八十キログラムより少ないはずです。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get.toInt match  {
@@ -61,7 +66,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
 
 
   "彼の身長は推定、170cmから180センチメートルの間です。"should "analyze correctly" in {
-    val o = SentenceParser.parse("彼の身長は推定、170cmから百八十センチメートル未満です。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の身長は推定、170cmから百八十センチメートル未満です。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get.toInt match  {
@@ -85,7 +91,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
 
 
   "その期限は、平成十年三月三十一日から令和元年5月1日までです。"should "analyze correctly" in {
-    val o = SentenceParser.parse("その期限は、平成十年三月三十一日から令和元年5月1日までです。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その期限は、平成十年三月三十一日から令和元年5月1日までです。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val hoge = o._1.map(x => x._2.rangeExpressions)
 
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
@@ -107,7 +114,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
   }
 
   "そのイベントは、AM１０時３０分から午後八時五十九分までです。"should "analyze correctly" in {
-    val o = SentenceParser.parse("そのイベントは、AM１０時３０分から午後八時五十九分までです。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("そのイベントは、AM１０時３０分から午後八時五十九分までです。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get match  {
@@ -127,7 +135,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
   }
 
   "その案件は、四億五千万円以上、10億円以下で取り引きされるだろう。"should "analyze correctly" in {
-    val o = SentenceParser.parse("その案件は、四億五千万円以上、10億円以下で取り引きされるだろう。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その案件は、四億五千万円以上、10億円以下で取り引きされるだろう。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get match  {
@@ -147,7 +156,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
   }
 
   "その案件は、￥450,000,000以上、1000000000YEN未満で取り引きされるだろう。"should "analyze correctly" in {
-    val o = SentenceParser.parse("その案件は、￥450,000,000以上、1000000000YEN未満で取り引きされるだろう。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その案件は、￥450,000,000以上、1000000000YEN未満で取り引きされるだろう。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get match  {
@@ -167,7 +177,8 @@ class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with Before
   }
 
   "その指標は、-100以上、100以下で定義される。"should "analyze correctly" in {
-    val o = SentenceParser.parse("その指標は、-100以上、100以下で定義される。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その指標は、-100以上、100以下で定義される。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
       x.get("quantity").get match  {
