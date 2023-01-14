@@ -24,14 +24,20 @@ For more information on the output, see https://github.com/toposoid/toposoid-kno
 Especially with KnowledgeBaseNode And KnowledgeBase Edge are important
 
 ```scala
+import com.ideal.linked.toposoid.knowledgebase.regist.model.Knowledge
+import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
+import io.jvm.uuid.UUID
 
-val o = SentenceParser.parse("太郎は本を買いました")
-for (element <- o._1) {
-  println(element)
-}
-
-for (element <- o._2) {
-  println(element)
+object Test extends App {
+  val sentence = "太郎は本を買いました。"
+  val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge(sentence, "ja_JP", "{}") )
+  val o = SentenceParser.parse(knowledgeForParser)
+  for (element <- o._1) {
+    println(element)
+  }
+  for (element <- o._2) {
+    println(element)
+  }
 }
 ```
 

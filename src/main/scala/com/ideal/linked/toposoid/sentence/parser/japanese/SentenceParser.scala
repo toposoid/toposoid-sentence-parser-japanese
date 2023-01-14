@@ -24,8 +24,6 @@ import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
 import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode}
 import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import com.typesafe.scalalogging.LazyLogging
-import io.jvm.uuid.UUID
-
 import scala.util.{Failure, Success, Try}
 
 
