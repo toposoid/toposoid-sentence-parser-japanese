@@ -1,7 +1,7 @@
 import Dependencies._
 
 ThisBuild / scalaVersion     := "2.12.12"
-ThisBuild / version          := "0.3"
+ThisBuild / version          := "0.4"
 ThisBuild / organization     := "com.ideal.linked"
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.11.3" cross CrossVersion.full)
@@ -15,12 +15,14 @@ lazy val root = (project in file("."))
       "org.typelevel" %% "cats-core" % "0.8.1"
     ),
     dependencyOverrides += "org.typelevel" %% "cats-core" % "0.8.1",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.3",
-    libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.3",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.3",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.4",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.4",
+    libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.4",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.4",
     libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
     libraryDependencies += "com.typesafe.play" %% "play" % "2.8.8",
     libraryDependencies += "com.ibm.icu" % "icu4j" % "63.1",
+    libraryDependencies += "commons-lang" % "commons-lang" % "2.6",
     libraryDependencies += scalaTest % Test
   )
   .enablePlugins(AutomateHeaderPlugin)

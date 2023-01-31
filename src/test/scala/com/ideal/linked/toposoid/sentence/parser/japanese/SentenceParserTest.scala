@@ -19,11 +19,16 @@ package com.ideal.linked.toposoid.sentence.parser.japanese
 import com.ideal.linked.toposoid.knowledgebase.model.KnowledgeBaseNode
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, DiagrammedAssertions, FlatSpec}
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
+import com.ideal.linked.toposoid.knowledgebase.regist.model.Knowledge
+import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
+import io.jvm.uuid.UUID
+
 class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeAndAfter with BeforeAndAfterAll{
 
   "太郎は花子に借りた本を返した。" should "analyze correctly" in {
     //主張の中の基本的な格構造（ 主語、目的語、補語）を認識できているか？
-    val o = SentenceParser.parse("太郎は花子に借りた本を返した。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎は花子に借りた本を返した。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val sentence:String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.surface }
     assert(sentence.equals("太郎は花子に借りた本を返した。"))
     val caseCheckMap = o._2.map(x =>  x.caseStr -> o._1.get(x.sourceId)).toMap[String, Option[KnowledgeBaseNode]]
@@ -45,8 +50,9 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
   }
 
   "太郎は花子に借りた本を返さなかった。" should "analyze correctly" in {
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎は花子に借りた本を返さなかった。", "ja_JP", "{}") )
     //否定文を認識できるか
-    val o = SentenceParser.parse("太郎は花子に借りた本を返さなかった。")
+    val o = SentenceParser.parse(knowledgeForParser)
     val denialExpression = o._1.filter(x => x._2.isDenialWord).head._2.surface
     assert(denialExpression.equals("返さなかった。"))
     //主張の中の基本的な格構造（ 主語、目的語、補語）を認識できているか？
@@ -72,7 +78,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
 
   "もし明日の天気が雨ならば、太郎は映画を見る予定です。" should "analyze correctly" in {
-    val o = SentenceParser.parse("もし明日の天気が雨ならば、太郎は映画を見る予定です。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("もし明日の天気が雨ならば、太郎は映画を見る予定です。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val sentence:String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.surface }
     assert(sentence.equals("もし明日の天気が雨ならば、太郎は映画を見る予定です。"))
 
@@ -104,7 +111,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、もしくは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。" should "analyze correctly" in {
     //前提に複数の並列関係がある場合、前提内のORを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、もしくは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、もしくは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val sentence:String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.surface }
     assert(sentence.equals("太郎が留学経験者である場合、もしくは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。"))
 
@@ -138,7 +146,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、あるいは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。" should "analyze correctly" in {
     //前提に複数の並列関係がある場合、前提内のORを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、あるいは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、あるいは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val orEdge = o._2.filter(_.logicType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.surface
@@ -154,7 +163,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、または太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。" should "analyze correctly" in {
     //前提に複数の並列関係がある場合、前提内のORを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、または太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、または太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val orEdge = o._2.filter(_.logicType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.surface
@@ -171,7 +181,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、かつ太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。" should "analyze correctly" in {
     //前提に複数の並列関係がある場合、前提内のANDを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、かつ太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、かつ太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val sentence:String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.surface }
     assert(sentence.equals("太郎が留学経験者である場合、かつ太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。"))
 
@@ -205,7 +216,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、及び太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。" should "analyze correctly" in {
     //前提に複数の並列関係がある場合、前提内のANDを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、及び太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、及び太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val andEdge = o._2.filter(_.logicType.equals("AND")).head
     val node1 =  o._1.get(andEdge.sourceId) match {
       case Some(x) => x.surface
@@ -221,7 +233,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、太郎は採用され、かつ太郎の給料は今より上がるだろう。" should "analyze correctly" in {
     //主張に複数の並列関係がある場合、主張内のANDを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、太郎は採用され、かつ太郎の給料は今より上がるだろう。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、太郎は採用され、かつ太郎の給料は今より上がるだろう。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val andEdge = o._2.filter(_.logicType.equals("AND")).head
     val node1 =  o._1.get(andEdge.sourceId) match {
       case Some(x) => x.surface
@@ -237,7 +250,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎が留学経験者である場合、太郎は採用され、もしくは太郎の給料は今より上がるだろう。" should "analyze correctly" in {
     //主張に複数の並列関係がある場合、主張内のORを適切に認識できるか
-    val o = SentenceParser.parse("太郎が留学経験者である場合、太郎は採用され、もしくは太郎の給料は今より上がるだろう。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、太郎は採用され、もしくは太郎の給料は今より上がるだろう。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val orEdge = o._2.filter(_.logicType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.surface
@@ -253,7 +267,8 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "太郎の趣味はピアノです。花子の趣味はガーデニングです。" should "analyze correctly" in {
     //複数文書を処理できるか？
-    val o = SentenceParser.parse("太郎の趣味はピアノです。花子の趣味はガーデニングです。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎の趣味はピアノです。花子の趣味はガーデニングです。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     val sentence: String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.surface }
     assert(sentence.equals("太郎の趣味はピアノです。花子の趣味はガーデニングです。"))
 
@@ -264,16 +279,20 @@ class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeA
 
   "株式会社ｱｲｳｴｵは２０００年４月１５日に４０００万円をある企業に支払った。"should "analyze correctly" in {
     //NERのチェック
-    val o = SentenceParser.parse("株式会社ｱｲｳｴｵは２０００年４月１５日に４０００万円をある企業に支払った。")
-    val ne: String = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft("") { (acc, x) => acc + x._2.namedEntity }
-    assert(ne == "ORGANIZATION:株式会社アイウエオDATE:２０００年４月１５日MONEY:４０００万円")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("株式会社ｱｲｳｴｵは２０００年４月１５日に４０００万円をある企業に支払った。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
+    val ne: List[String] = o._1.map(x => x._2.currentId -> x._2).toSeq.sortBy(_._1).foldLeft(List.empty[String]) { (acc, x) => x._2.namedEntity match {
+      case "" => acc
+      case _ => x._2.namedEntity + ":" + x._2.surface :: acc
+    }}
+    assert(ne.mkString(",").equals("MONEY:４０００万円を,DATE:１５日に,ORGANIZATION:株式会社アイウエオは"))
   }
 
   "主張１はファクト１２３４より正しい。"should "analyze correctly" in {
     //正規化表現の特別な場合のチェック
-    val o = SentenceParser.parse("主張１はファクト１２３４より正しい。")
+    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("主張１はファクト１２３４より正しい。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
     assert(o._1.filter(x =>  x._2.normalizedName == "主張１" || x._2.normalizedName == "ファクト１２３４").size == 2)
-
   }
 
 }
