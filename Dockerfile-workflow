@@ -1,4 +1,4 @@
-FROM toposoid/scala-knp:2.12.12-4.19
+FROM toposoid/scala-knp:2.13.11-4.19
 
 WORKDIR /app
 ARG TARGET_BRANCH

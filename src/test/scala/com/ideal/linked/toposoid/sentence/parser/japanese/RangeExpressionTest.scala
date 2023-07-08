@@ -17,10 +17,11 @@
 package com.ideal.linked.toposoid.sentence.parser.japanese
 import com.ideal.linked.toposoid.knowledgebase.regist.model.Knowledge
 import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, DiagrammedAssertions, FlatSpec}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
 import io.jvm.uuid.UUID
+import org.scalatest.flatspec.AnyFlatSpec
 
-class RangeExpressionTest extends FlatSpec with DiagrammedAssertions with BeforeAndAfter with BeforeAndAfterAll{
+class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndAfterAll{
 
   "彼の体重は推定、60kgから八十キログラムの間です。"should "analyze correctly" in {
     val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の体重は推定、60kgから八十キログラム未満です。", "ja_JP", "{}") )

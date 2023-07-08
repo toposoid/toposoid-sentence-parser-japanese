@@ -17,13 +17,14 @@
 package com.ideal.linked.toposoid.sentence.parser.japanese
 
 import com.ideal.linked.toposoid.knowledgebase.model.KnowledgeBaseNode
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, DiagrammedAssertions, FlatSpec}
+import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
+import org.scalatest.flatspec.AnyFlatSpec
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
 import com.ideal.linked.toposoid.knowledgebase.regist.model.Knowledge
 import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import io.jvm.uuid.UUID
 
-class SentenceParserTest extends FlatSpec with DiagrammedAssertions with BeforeAndAfter with BeforeAndAfterAll{
+class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndAfterAll{
 
   "太郎は花子に借りた本を返した。" should "analyze correctly" in {
     //主張の中の基本的な格構造（ 主語、目的語、補語）を認識できているか？
