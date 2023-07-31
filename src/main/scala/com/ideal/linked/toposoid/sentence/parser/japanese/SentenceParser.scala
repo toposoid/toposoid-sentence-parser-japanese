@@ -21,9 +21,10 @@ import com.enjapan.knp.KNPCli
 import com.enjapan.knp.models.{BList, Bunsetsu, Tag}
 import com.ibm.icu.text.Transliterator
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
-import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode}
+import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode, LocalContext, PredicateArgumentStructure}
 import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import com.typesafe.scalalogging.LazyLogging
+
 import scala.util.{Failure, Success, Try}
 
 
@@ -72,7 +73,7 @@ object SentenceParser extends LazyLogging {
       }
     }
     val updateSpr = SentenceParserResult(tmpNodes, spr.edges, spr.index, spr.bunsetsuNum)
-    val conditionalConnectionNodes = tmpNodes.filter(_._2.isConditionalConnection)
+    val conditionalConnectionNodes = tmpNodes.filter(_._2.predicateArgumentStructure.isConditionalConnection)
     //複数の節が前提となる場合も考慮する。
     conditionalConnectionNodes.size > 0 match {
       case true => {
@@ -108,7 +109,7 @@ object SentenceParser extends LazyLogging {
       case true => {
         val updatedSentenceParserResult = SentenceParserResult(replaceNodes, spr.edges, spr.index, spr.bunsetsuNum)
         selectedPremiseEdges.foldLeft(replaceNodes){ (acc, x) => {
-          val premiseNodes :Map[String, KnowledgeBaseNode] = replacePremiseNode(x, updatedSentenceParserResult).filter(_._2.nodeType == 0)
+          val premiseNodes :Map[String, KnowledgeBaseNode] = replacePremiseNode(x, updatedSentenceParserResult).filter(_._2.predicateArgumentStructure.nodeType == 0)
           premiseNodes.foldLeft(acc){(acc2, y) => {
             acc2 ++ Map(y._1 -> y._2)
           }}
@@ -125,28 +126,42 @@ object SentenceParser extends LazyLogging {
    * @param nodeType
    */
   private def replaceKnowledgeBaseNode(node:KnowledgeBaseNode, nodeType:Int, nodes:Map[String, KnowledgeBaseNode]): Map[String, KnowledgeBaseNode] ={
+
+    val localContext = LocalContext(
+      "ja_JP",
+      node.localContext.namedEntity,
+      node.localContext.rangeExpressions,
+      node.localContext.categories,
+      node.localContext.domains,
+      node.localContext.referenceIdMap
+    )
+
+    val predicateArgumentStructure = PredicateArgumentStructure(
+      node.predicateArgumentStructure.currentId,
+      node.predicateArgumentStructure.parentId,
+      node.predicateArgumentStructure.isMainSection,
+      node.predicateArgumentStructure.surface,
+      node.predicateArgumentStructure.normalizedName,
+      node.predicateArgumentStructure.dependType,
+      node.predicateArgumentStructure.caseType,
+      node.predicateArgumentStructure.isDenialWord,
+      node.predicateArgumentStructure.isConditionalConnection,
+      node.predicateArgumentStructure.normalizedNameYomi,
+      node.predicateArgumentStructure.surfaceYomi,
+      node.predicateArgumentStructure.modalityType,
+      node.predicateArgumentStructure.logicType,
+      nodeType,
+      node.predicateArgumentStructure.morphemes
+    )
+
     val replaceNode =  KnowledgeBaseNode(
       node.nodeId,
       node.propositionId,
-      node.currentId,
-      node.parentId,
-      node.isMainSection,
-      node.surface,
-      node.normalizedName,
-      node.dependType,
-      node.caseType,
-      node.namedEntity,
-      node.rangeExpressions,
-      node.categories,
-      node.domains,
-      node.isDenialWord,
-      node.isConditionalConnection,
-      node.normalizedNameYomi,
-      node.surfaceYomi,
-      node.modalityType,
-      node.logicType,
-      nodeType,
-      "ja_JP")
+      node.sentenceId,
+      predicateArgumentStructure,
+      localContext,
+      node.extentText,
+      )
     nodes.updated(node.nodeId,replaceNode)
   }
 
@@ -240,6 +255,13 @@ object SentenceParser extends LazyLogging {
     }
   }
 
+  private def getMorphemes(morphemes: List[Morpheme]): List[String] = {
+    morphemes.foldLeft(List.empty[String]) { (acc, x) => {
+          acc ++ List(x.hinsi + "," + x.bunrui + "," + x.katuyou1 + "," + x.katuyou2)
+      }
+    }
+  }
+
 
   /**
    * Predicate argument structure analysis.
@@ -272,9 +294,12 @@ object SentenceParser extends LazyLogging {
       case true => "IMP"
       case false => x.features.get("並列タイプ").getOrElse("-")
     }
-
+    val morphemes = getMorphemes(x.tags.map(_.morphemes).head)
     //nodeTypeは全てのノードが確定するまで決められないので、一旦-1をセットしておく
-    val node = KnowledgeBaseNode(nodeId, propositionId, currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType, namedEntity, rangeExpressions, categories, domains, isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, lang)
+    val predicateArgumentStructure = PredicateArgumentStructure(currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType,isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, morphemes)
+    val localContext = LocalContext(lang, namedEntity, rangeExpressions, categories, domains, Map.empty[String, String])
+
+    val node = KnowledgeBaseNode(nodeId, propositionId,  sentenceId, predicateArgumentStructure, localContext)
     val sourceId = nodeId
     val destinationId = sentenceId + "-" + x.parentId.toString
     val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType, lang)
