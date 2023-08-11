@@ -133,7 +133,7 @@ object SentenceParser extends LazyLogging {
       node.localContext.rangeExpressions,
       node.localContext.categories,
       node.localContext.domains,
-      node.localContext.knowledgeFeatureReference
+      node.localContext.knowledgeFeatureReferences
     )
 
     val predicateArgumentStructure = PredicateArgumentStructure(
