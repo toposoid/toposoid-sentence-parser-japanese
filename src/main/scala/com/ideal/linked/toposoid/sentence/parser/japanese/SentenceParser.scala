@@ -21,7 +21,7 @@ import com.enjapan.knp.KNPCli
 import com.enjapan.knp.models.{BList, Bunsetsu, Tag}
 import com.ibm.icu.text.Transliterator
 import com.ideal.linked.toposoid.common.{CLAIM, PREMISE}
-import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode, LocalContext, PredicateArgumentStructure}
+import com.ideal.linked.toposoid.knowledgebase.model.{KnowledgeBaseEdge, KnowledgeBaseNode, KnowledgeFeatureReference, LocalContext, PredicateArgumentStructure}
 import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import com.typesafe.scalalogging.LazyLogging
 
@@ -133,7 +133,7 @@ object SentenceParser extends LazyLogging {
       node.localContext.rangeExpressions,
       node.localContext.categories,
       node.localContext.domains,
-      node.localContext.referenceIdMap
+      node.localContext.knowledgeFeatureReference
     )
 
     val predicateArgumentStructure = PredicateArgumentStructure(
@@ -159,8 +159,7 @@ object SentenceParser extends LazyLogging {
       node.propositionId,
       node.sentenceId,
       predicateArgumentStructure,
-      localContext,
-      node.extentText,
+      localContext
       )
     nodes.updated(node.nodeId,replaceNode)
   }
@@ -297,7 +296,7 @@ object SentenceParser extends LazyLogging {
     val morphemes = getMorphemes(x.tags.map(_.morphemes).head)
     //nodeTypeは全てのノードが確定するまで決められないので、一旦-1をセットしておく
     val predicateArgumentStructure = PredicateArgumentStructure(currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType,isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, morphemes)
-    val localContext = LocalContext(lang, namedEntity, rangeExpressions, categories, domains, Map.empty[String, String])
+    val localContext = LocalContext(lang, namedEntity, rangeExpressions, categories, domains, List.empty[KnowledgeFeatureReference])
 
     val node = KnowledgeBaseNode(nodeId, propositionId,  sentenceId, predicateArgumentStructure, localContext)
     val sourceId = nodeId
