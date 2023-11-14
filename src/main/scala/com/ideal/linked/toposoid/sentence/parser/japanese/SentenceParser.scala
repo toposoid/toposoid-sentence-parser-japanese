@@ -149,7 +149,7 @@ object SentenceParser extends LazyLogging {
       node.predicateArgumentStructure.normalizedNameYomi,
       node.predicateArgumentStructure.surfaceYomi,
       node.predicateArgumentStructure.modalityType,
-      node.predicateArgumentStructure.logicType,
+      node.predicateArgumentStructure.parallelType,
       nodeType,
       node.predicateArgumentStructure.morphemes
     )
@@ -289,19 +289,22 @@ object SentenceParser extends LazyLogging {
       case _ => normalizedNameInfo.split('+').map(_.split('/')(1)).toList.mkString("")
     }
     val modalityType:String = getModality(x.features)
+    /*
     val logicType:String = isConditionalConnection match {
       case true => "IMP"
-      case false => x.features.get("並列タイプ").getOrElse("-")
+      case false => "-"
     }
+    */
+    val parallelType = x.features.get("並列タイプ").getOrElse("-")
     val morphemes = getMorphemes(x.tags.map(_.morphemes).head)
     //nodeTypeは全てのノードが確定するまで決められないので、一旦-1をセットしておく
-    val predicateArgumentStructure = PredicateArgumentStructure(currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType,isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, logicType, -1, morphemes)
+    val predicateArgumentStructure = PredicateArgumentStructure(currentId, x.parentId, isMainSection, surface, normalizedName, x.dpndtype, caseType,isDenial, isConditionalConnection, normalizedNameYomi, surfaceYomi, modalityType, parallelType, -1, morphemes)
     val localContext = LocalContext(lang, namedEntity, rangeExpressions, categories, domains, List.empty[KnowledgeFeatureReference])
 
     val node = KnowledgeBaseNode(nodeId, propositionId,  sentenceId, predicateArgumentStructure, localContext)
     val sourceId = nodeId
     val destinationId = sentenceId + "-" + x.parentId.toString
-    val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, logicType, lang)
+    val edge = KnowledgeBaseEdge(sourceId, destinationId, caseType, x.dpndtype, parallelType, isConditionalConnection, "-")
     val nodes  = spr.nodes.updated(nodeId, node)
     //述語項構造解析の結果として文章が区切れる場合（文末から文末への関係がある場合）は、エッジを作成しない。
     val edges:List[KnowledgeBaseEdge] = x.parentId != -1 && caseType != "文末" match  {
