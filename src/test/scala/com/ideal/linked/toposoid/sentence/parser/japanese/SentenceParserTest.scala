@@ -97,7 +97,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
       assert(node._2.predicateArgumentStructure.nodeType == CLAIM.index)
     }
     //前提と主張の間のエッジは、logicNodeの関係になっているか？
-    val logicEdge = o._2.filter(_.logicType.equals("IMP")).head
+    val logicEdge = o._2.filter(_.hasInclusion).head
     val premiseNode =  o._1.get(logicEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -120,7 +120,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     val conditionalConnection = o._1.filter(x => x._2.predicateArgumentStructure.isConditionalConnection).head._2.predicateArgumentStructure.surface
     assert(conditionalConnection.equals("あるならば、"))
 
-    val logicEdge = o._2.filter(_.logicType.equals("IMP")).head
+    val logicEdge = o._2.filter(_.hasInclusion).head
     val premiseNode =  o._1.get(logicEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -132,7 +132,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     assert(premiseNode.equals("あるならば、"))
     assert(claimNode.equals("採用されるかもしれない。"))
 
-    val orEdge = o._2.filter(_.logicType.equals("OR")).head
+    val orEdge = o._2.filter(_.parallelType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -149,7 +149,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     //前提に複数の並列関係がある場合、前提内のORを適切に認識できるか
     val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、あるいは太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
-    val orEdge = o._2.filter(_.logicType.equals("OR")).head
+    val orEdge = o._2.filter(_.parallelType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -166,7 +166,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     //前提に複数の並列関係がある場合、前提内のORを適切に認識できるか
     val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、または太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
-    val orEdge = o._2.filter(_.logicType.equals("OR")).head
+    val orEdge = o._2.filter(_.parallelType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -190,7 +190,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     val conditionalConnection = o._1.filter(x => x._2.predicateArgumentStructure.isConditionalConnection).head._2.predicateArgumentStructure.surface
     assert(conditionalConnection.equals("あるならば、"))
 
-    val logicEdge = o._2.filter(_.logicType.equals("IMP")).head
+    val logicEdge = o._2.filter(_.hasInclusion).head
     val premiseNode =  o._1.get(logicEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -202,7 +202,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     assert(premiseNode.equals("あるならば、"))
     assert(claimNode.equals("採用されるかもしれない。"))
 
-    val andEdge = o._2.filter(_.logicType.equals("AND")).head
+    val andEdge = o._2.filter(_.parallelType.equals("AND")).head
     val node1 =  o._1.get(andEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -219,7 +219,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     //前提に複数の並列関係がある場合、前提内のANDを適切に認識できるか
     val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、及び太郎が幼児教育に携わった経験があるならば、太郎は採用されるかもしれない。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
-    val andEdge = o._2.filter(_.logicType.equals("AND")).head
+    val andEdge = o._2.filter(_.parallelType.equals("AND")).head
     val node1 =  o._1.get(andEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -236,7 +236,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     //主張に複数の並列関係がある場合、主張内のANDを適切に認識できるか
     val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、太郎は採用され、かつ太郎の給料は今より上がるだろう。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
-    val andEdge = o._2.filter(_.logicType.equals("AND")).head
+    val andEdge = o._2.filter(_.parallelType.equals("AND")).head
     val node1 =  o._1.get(andEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
@@ -253,7 +253,7 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     //主張に複数の並列関係がある場合、主張内のORを適切に認識できるか
     val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("太郎が留学経験者である場合、太郎は採用され、もしくは太郎の給料は今より上がるだろう。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
-    val orEdge = o._2.filter(_.logicType.equals("OR")).head
+    val orEdge = o._2.filter(_.parallelType.equals("OR")).head
     val node1 =  o._1.get(orEdge.sourceId) match {
       case Some(x) => x.predicateArgumentStructure.surface
       case _ => ""
