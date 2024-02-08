@@ -12,8 +12,9 @@ Sbt version 1.9.0
 [KNP 4.19](https://nlp.ist.i.kyoto-u.ac.jp/?KNP)
 
 ## Recommended environment
-* Required: at least 6GB of RAM
+* Required: at least 2GB of RAM
 * Required: 10G or higher　of HDD
+* ref. https://nlp.ist.i.kyoto-u.ac.jp/?KNP#t6a63e5c
 
 ## Setup
 sbt publishLocal
