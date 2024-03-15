@@ -1,7 +1,7 @@
 import Dependencies._
 
 ThisBuild / scalaVersion     := "2.13.11"
-ThisBuild / version          := "0.5"
+ThisBuild / version          := "0.6-SNAPSHOT"
 ThisBuild / organization     := "com.ideal.linked"
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
@@ -14,10 +14,10 @@ lazy val root = (project in file("."))
       "org.typelevel" %% "cats-core" % "2.9.0"
     ),
     dependencyOverrides += "org.typelevel" %% "cats-core" % "2.9.0",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.5",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.5",
-    libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.5",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.5",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.6-SNAPSHOT",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.6-SNAPSHOT",
+    libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.6-SNAPSHOT",
+    libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.6-SNAPSHOT",
     libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
     libraryDependencies += "com.typesafe.play" %% "play" % "2.8.8",
     libraryDependencies += "com.ibm.icu" % "icu4j" % "63.1",
