@@ -1,17 +1,23 @@
 import Dependencies._
 import de.heikoseeberger.sbtheader.License
 
-ThisBuild / scalaVersion     := "2.13.11"
+ThisBuild / scalaVersion     := "3.3.6"
 ThisBuild / version          := "0.7-SNAPSHOT"
 ThisBuild / organization     := "com.ideal.linked"
 
-addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
+//addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
+
+val AkkaVersion = "2.10.9"
+val AkkaHttpVersion = "10.5.2"
+val AkkaToken = sys.env.get("TOPOSOID_AKKA_TOKEN").get
 
 lazy val root = (project in file("."))
   .settings(
     name := "toposoid-sentence-parser-japanese",
+    resolvers += "akka-secure-mvn" at "https://repo.akka.io/" + AkkaToken + "/secure",
+    resolvers += Resolver.url("akka-secure-ivy", url("https://repo.akka.io/" + AkkaToken  + "/secure"))(Resolver.ivyStylePatterns),
     libraryDependencies ++= Seq(
-      "com.enjapan" %% "scala-juman-knp" % "0.0.11-SNAPSHOT",
+      "com.enjapan" %% "scala-juman-knp" % "0.0.12-SNAPSHOT",
       "org.typelevel" %% "cats-core" % "2.9.0"
     ),
     dependencyOverrides += "org.typelevel" %% "cats-core" % "2.9.0",
@@ -19,8 +25,9 @@ lazy val root = (project in file("."))
     libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.7-SNAPSHOT",
     libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.7-SNAPSHOT",
     libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.7-SNAPSHOT",
-    libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
-    libraryDependencies += "com.typesafe.play" %% "play" % "2.8.8",
+    //libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
+    //libraryDependencies += "com.typesafe.play" %% "play" % "2.8.8",
+    libraryDependencies += "org.playframework" %% "play" % "3.0.9",
     libraryDependencies += "com.ibm.icu" % "icu4j" % "63.1",
     libraryDependencies += "commons-lang" % "commons-lang" % "2.6",
     libraryDependencies += scalaTest % Test

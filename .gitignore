@@ -5,3 +5,7 @@ project/target/
 *.class
 *.log
 .bsp/
+.metals/
+.vscode/
+project/metals.sbt
+project/project

@@ -19,13 +19,13 @@ package com.ideal.linked.toposoid.sentence.parser.japanese
 import com.ideal.linked.toposoid.knowledgebase.regist.model.Knowledge
 import com.ideal.linked.toposoid.protocol.model.parser.KnowledgeForParser
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll}
-import io.jvm.uuid.UUID
+//import io.jvm.uuid.UUID
 import org.scalatest.flatspec.AnyFlatSpec
 
 class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndAfterAll{
 
   "彼の体重は推定、60kgから八十キログラムの間です。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の体重は推定、60kgから八十キログラム未満です。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("彼の体重は推定、60kgから八十キログラム未満です。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
@@ -46,7 +46,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
   }
 
   "彼の体重は60kgより多く八十キログラムより少ないはずです。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の体重は60kgより多く八十キログラムより少ないはずです。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("彼の体重は60kgより多く八十キログラムより少ないはずです。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
@@ -68,7 +68,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
 
 
   "彼の身長は推定、170cmから180センチメートルの間です。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("彼の身長は推定、170cmから百八十センチメートル未満です。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("彼の身長は推定、170cmから百八十センチメートル未満です。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
@@ -93,7 +93,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
 
 
   "その期限は、平成十年三月三十一日から令和元年5月1日までです。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その期限は、平成十年三月三十一日から令和元年5月1日までです。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("その期限は、平成十年三月三十一日から令和元年5月1日までです。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val hoge = o._1.map(x => x._2.localContext.rangeExpressions)
 
@@ -116,7 +116,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
   }
 
   "そのイベントは、AM１０時３０分から午後八時五十九分までです。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("そのイベントは、AM１０時３０分から午後八時五十九分までです。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("そのイベントは、AM１０時３０分から午後八時五十九分までです。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
@@ -137,7 +137,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
   }
 
   "その案件は、四億五千万円以上、10億円以下で取り引きされるだろう。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その案件は、四億五千万円以上、10億円以下で取り引きされるだろう。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("その案件は、四億五千万円以上、10億円以下で取り引きされるだろう。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
@@ -158,7 +158,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
   }
 
   "その案件は、￥450,000,000以上、1000000000YEN未満で取り引きされるだろう。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その案件は、￥450,000,000以上、1000000000YEN未満で取り引きされるだろう。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("その案件は、￥450,000,000以上、1000000000YEN未満で取り引きされるだろう。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {
@@ -179,7 +179,7 @@ class RangeExpressionTest extends AnyFlatSpec with BeforeAndAfter with BeforeAnd
   }
 
   "その指標は、-100以上、100以下で定義される。"should "analyze correctly" in {
-    val knowledgeForParser = KnowledgeForParser(UUID.random.toString, UUID.random.toString, Knowledge("その指標は、-100以上、100以下で定義される。", "ja_JP", "{}") )
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("その指標は、-100以上、100以下で定義される。", "ja_JP", "{}") )
     val o = SentenceParser.parse(knowledgeForParser)
     val rangeExceptionList =  o._1.map(x => x._2.localContext.rangeExpressions.head._2).filter(_.size != 0)
     rangeExceptionList.foreach(x => {

@@ -212,7 +212,7 @@ object SentenceParser extends LazyLogging {
     //https://www.anlp.jp/proceedings/annual_meeting/2016/pdf_dir/P20-3.pdf
     //読点などが最後になるケースもあるので、表層で見るときは部分一致で判定。
 
-    if (x.tags.filter(_.features.isDefinedAt("節機能-条件")).size > 0) {
+    if (x.tags.filter(_.features.isDefinedAt("節-機能-条件")).size > 0) {
       //条件節を判定
       return true
     } else if ((surfaceYomi.contains("ばあい") || surfaceYomi.contains("ところ") || surfaceYomi.contains("かぎり") || surfaceYomi.contains("けっか") || surfaceYomi.contains("ものの"))
@@ -222,10 +222,10 @@ object SentenceParser extends LazyLogging {
     } else if (surfaceYomi.contains("ばあい") && x.features.isDefinedAt("格要素") && x.features.isDefinedAt("外の関係")){
       //条件節を判定
       return true
-    }else if(x.tags.filter(_.features.isDefinedAt("節機能-理由")).size > 0 || x.tags.filter(_.features.isDefinedAt("節機能-目的")).size > 0) {
+    }else if(x.tags.filter(_.features.isDefinedAt("節-機能-理由")).size > 0 || x.tags.filter(_.features.isDefinedAt("節-機能-目的")).size > 0) {
       //理由節、目的節
       return true
-    }else if(x.tags.filter(_.features.isDefinedAt("節機能-時間経過")).size > 0) {
+    }else if(x.tags.filter(_.features.isDefinedAt("節-sbt comip機能-時間経過")).size > 0) {
       //時節を判定
       return true
     }else if(x.tags.filter(_.features.isDefinedAt("時間")).size > 0
