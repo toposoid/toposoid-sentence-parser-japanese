@@ -17,7 +17,7 @@ lazy val root = (project in file("."))
     resolvers += "akka-secure-mvn" at "https://repo.akka.io/" + AkkaToken + "/secure",
     resolvers += Resolver.url("akka-secure-ivy", url("https://repo.akka.io/" + AkkaToken  + "/secure"))(Resolver.ivyStylePatterns),
     libraryDependencies ++= Seq(
-      "com.enjapan" %% "scala-juman-knp" % "0.0.12-SNAPSHOT",
+      "com.enjapan" %% "scala-juman-knp" % "0.0.13-SNAPSHOT",
       "org.typelevel" %% "cats-core" % "2.9.0"
     ),
     dependencyOverrides += "org.typelevel" %% "cats-core" % "2.9.0",
