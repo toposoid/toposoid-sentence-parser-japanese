@@ -1,4 +1,8 @@
-FROM toposoid/scala-knp:2.13.11-4.19
+FROM toposoid/toposoid-scala-lib-base:0.7-SNAPSHOT
+
+FROM toposoid/scala-knp:3.3.6-5.0
+WORKDIR /root
+COPY --from=0 /root/.ivy2/local ./.ivy2/local
 
 WORKDIR /app
 ARG TARGET_BRANCH
@@ -7,31 +11,6 @@ ENV _JAVA_OPTIONS="-Xms2g -Xmx4g"
 
 RUN apt-get update \
 && apt-get -y install git \
-&& git clone https://github.com/toposoid/scala-common.git \
-&& cd scala-common \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& cd .. \
-&& git clone https://github.com/toposoid/toposoid-knowledgebase-model.git \
-&& cd toposoid-knowledgebase-model \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& cd .. \
-&& git clone https://github.com/toposoid/toposoid-deduction-protocol-model.git \
-&& cd toposoid-deduction-protocol-model \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& rm -Rf ./target \
-&& cd .. \
-&& git clone https://github.com/toposoid/toposoid-common.git \
-&& cd toposoid-common \
-&& git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& sbt publishLocal \
-&& cd .. \
 && git clone https://github.com/toposoid/scala-juman-knp.git \
 && cd scala-juman-knp \
 && git checkout scala-2.13-support \
