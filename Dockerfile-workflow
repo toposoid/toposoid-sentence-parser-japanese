@@ -13,10 +13,11 @@ RUN apt-get update \
 && apt-get -y install git \
 && git clone https://github.com/toposoid/scala-juman-knp.git \
 && cd scala-juman-knp \
-&& git checkout scala-3.3.6-knp-5.0-support \
+&& git checkout scala-3.3.6-knp-5.0-supportcd  \
 && sbt publishLocal \
 && cd .. \
 && git clone https://github.com/toposoid/toposoid-sentence-parser-japanese.git \
 && cd toposoid-sentence-parser-japanese \
 && git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH}
+&& git checkout ${TARGET_BRANCH} \
+&& ln -s /usr/local/bin/jumanpp /usr/local/bin/juman
