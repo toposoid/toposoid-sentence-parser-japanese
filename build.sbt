@@ -10,6 +10,7 @@ ThisBuild / organization     := "com.ideal.linked"
 lazy val root = (project in file("."))
   .settings(
     name := "toposoid-sentence-parser-japanese",
+    resolvers += Resolver.mavenLocal,
     libraryDependencies ++= Seq(
       "com.enjapan" %% "scala-juman-knp" % "0.0.13-SNAPSHOT",
       "org.typelevel" %% "cats-core" % "2.9.0"
