@@ -7,15 +7,9 @@ ThisBuild / organization     := "com.ideal.linked"
 
 //addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.13.2" cross CrossVersion.full)
 
-val AkkaVersion = "2.10.9"
-val AkkaHttpVersion = "10.5.2"
-val AkkaToken = sys.env.get("TOPOSOID_AKKA_TOKEN").get
-
 lazy val root = (project in file("."))
   .settings(
     name := "toposoid-sentence-parser-japanese",
-    resolvers += "akka-secure-mvn" at "https://repo.akka.io/" + AkkaToken + "/secure",
-    resolvers += Resolver.url("akka-secure-ivy", url("https://repo.akka.io/" + AkkaToken  + "/secure"))(Resolver.ivyStylePatterns),
     libraryDependencies ++= Seq(
       "com.enjapan" %% "scala-juman-knp" % "0.0.13-SNAPSHOT",
       "org.typelevel" %% "cats-core" % "2.9.0"
