@@ -21,5 +21,4 @@ RUN apt-get update \
 && git clone https://github.com/toposoid/toposoid-sentence-parser-japanese.git \
 && cd toposoid-sentence-parser-japanese \
 && git fetch origin ${TARGET_BRANCH} \
-&& git checkout ${TARGET_BRANCH} \
-&& ln -s /usr/local/bin/jumanpp /usr/local/bin/juman
+&& git checkout ${TARGET_BRANCH} 
