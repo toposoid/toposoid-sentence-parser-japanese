@@ -162,12 +162,12 @@ object SentenceParser extends LazyLogging {
     )
 
     val replaceNode =  KnowledgeBaseNode(
-      node.nodeId,
-      node.propositionId,
-      node.sentenceId,
-      predicateArgumentStructure,
-      localContext
-      )
+      nodeId = node.nodeId,
+      propositionId = node.propositionId,
+      sentenceId = node.sentenceId,
+      predicateArgumentStructure = predicateArgumentStructure,
+      localContext = localContext
+    )
     nodes.updated(node.nodeId,replaceNode)
   }
 
@@ -268,6 +268,22 @@ object SentenceParser extends LazyLogging {
     }
   }
 
+  private def getNamedEntities(tags:List[Tag]):Map[String, String] = {
+    tags.foldLeft(Map.empty[String,String]){
+      (acc, x)=> {
+        val namedEntityTarget:String = x.features.get("NE").getOrElse("")
+        namedEntityTarget match {
+          case "" => acc
+          case _ => {
+            val namedEntityElemnts = namedEntityTarget.split(":")
+            val target:String = namedEntityElemnts.last
+            val ne = namedEntityElemnts.head
+            acc ++ Map(target -> ne)
+          }
+        }
+      }
+    }    
+  }
 
   /**
    * Predicate argument structure analysis.
@@ -284,9 +300,12 @@ object SentenceParser extends LazyLogging {
     val normalizedName = this.getNormalizeName(x.tags.map(_.morphemes).head, x.features.get("正規化代表表記").getOrElse("-").split("/")(0))
     val isMainSection = x.features.isDefinedAt("主節")
     val caseType = x.features.get("係").getOrElse("-")
-    val namedEntities:Map[String, String] = x.tags.foldLeft(Map.empty[String,String]){(acc, x)=> acc ++ Map(surface -> x.features.get("NE").getOrElse("").split(":").head)}
-    //TODO: 直す
-    val rangeExpressions = QuantityAnalyzer.getRangeExpression(x.tags, namedEntities.head._2)
+    //val namedEntities:Map[String, String] = x.tags.foldLeft(Map.empty[String,String]){(acc, x)=> acc ++ Map(surface -> x.features.get("NE").getOrElse("").split(":").head)}
+    
+    val namedEntities:Map[String, String] = this.getNamedEntities(x.tags)
+    //namedEntities.foreach(a => println(a))    
+    val rangeExpressions = QuantityAnalyzer.getRangeExpression(x.tags, namedEntities)
+    //rangeExpressions.foreach(a => println(a))
     val categories = x.tags.map(getCategoryOrDomain(_, "カテゴリ")).map(arr => arr._1 -> arr._2).toMap
     val domains = x.tags.map(getCategoryOrDomain(_, "ドメイン")).map(arr => arr._1 -> arr._2).toMap
     val isDenial:Boolean = x.features.isDefinedAt("否定表現")

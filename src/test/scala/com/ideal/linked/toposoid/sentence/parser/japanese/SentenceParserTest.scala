@@ -298,4 +298,21 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
     assert(o._1.filter(x =>  x._2.predicateArgumentStructure.normalizedName == "主張１" || x._2.predicateArgumentStructure.normalizedName == "ファクト１２３４").size == 2)
   }
 
+  "2026年2月8日高市早苗総理大臣は、東京で選挙結果を待った。"should "analyze correctly" in {
+    //正規化表現の特別な場合のチェック
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("2026年2月8日高市早苗総理大臣は、東京で選挙結果を待った。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
+    o._1.foreach(x => {
+      x._2.localContext.namedEntities.foreach(y => {
+        y._1 match {
+          case "東京" => assert(y._2 == "LOCATION")
+          case "高市" => assert(y._2 == "LOCATION")
+          case "早苗" => assert(y._2 == "LOCATION")
+          case "２０２６年２月８日" => assert(y._2 == "DATE")
+        }
+      })      
+    })
+    
+  }
+
 }

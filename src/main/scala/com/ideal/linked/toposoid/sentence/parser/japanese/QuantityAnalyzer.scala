@@ -153,9 +153,34 @@ object QuantityAnalyzer {
   /**
    *
    * @param tags
-   * @param namedEntity
+   * @param namedEntities
    * @return
    */
+  def getRangeExpression(tags:List[Tag], namedEntities:Map[String, String]):Map[String, Map[String, String]] = Try{
+    
+    namedEntities.foldLeft(Map.empty[String, Map[String, String]] ){
+      (acc, x) => {
+        val namedEntity = x._2
+        tags.size match {
+          case 1 => acc ++ tags.map(findRangeExpression(_, namedEntity)).map(arr => arr._1 -> arr._2).toMap
+          case _ => {
+            val rangeExpressions = tags.map(findRangeExpression(_, namedEntity)).filterNot(_._1.equals("")).map(arr => arr._1 -> arr._2).toMap
+            rangeExpressions.isEmpty match {
+              case true => acc
+              case _ =>  acc ++ rangeExpressions
+            }
+          }
+        }        
+      }
+    }
+  }match {
+    case Success(s) => s
+    case Failure(e) => throw e
+  }
+
+}
+  
+  /*
   def getRangeExpression(tags:List[Tag], namedEntity:String):Map[String, Map[String, String]] = Try{
     tags.size match {
       case 1 => tags.map(findRangeExpression(_, namedEntity)).map(arr => arr._1 -> arr._2).toMap
@@ -173,3 +198,4 @@ object QuantityAnalyzer {
   }
 
 }
+*/
