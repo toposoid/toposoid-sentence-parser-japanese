@@ -9,3 +9,6 @@ project/target/
 .vscode/
 project/metals.sbt
 project/project
+.devcontainer
+docker-compose-dev.yml
+.bloop
