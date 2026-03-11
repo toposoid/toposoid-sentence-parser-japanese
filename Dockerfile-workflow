@@ -2,9 +2,7 @@ FROM toposoid/toposoid-scala-lib-base:0.7-SNAPSHOT
 
 FROM toposoid/scala-knp:3.3.6-5.0
 WORKDIR /root
-RUN mkdir -p /root/.m2/repository
 COPY --from=0 /root/.ivy2/local ./.ivy2/local
-COPY --from=0 /root/.m2 ./.m2
 
 WORKDIR /app
 ARG TARGET_BRANCH
