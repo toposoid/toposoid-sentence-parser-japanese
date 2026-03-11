@@ -15,17 +15,16 @@ lazy val root = (project in file("."))
       "com.enjapan" %% "scala-juman-knp" % "0.0.13-SNAPSHOT",
       "org.typelevel" %% "cats-core" % "2.9.0"
     ),
-    dependencyOverrides += "org.typelevel" %% "cats-core" % "2.9.0",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.7-SNAPSHOT",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.7-SNAPSHOT",
-    libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.7-SNAPSHOT",
-    libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.7-SNAPSHOT",
-    //libraryDependencies += "io.jvm.uuid" %% "scala-uuid" % "0.3.1",
-    //libraryDependencies += "com.typesafe.play" %% "play" % "2.8.8",
-    libraryDependencies += "org.playframework" %% "play" % "3.0.9",
-    libraryDependencies += "com.ibm.icu" % "icu4j" % "63.1",
-    libraryDependencies += "commons-lang" % "commons-lang" % "2.6",
-    libraryDependencies += scalaTest % Test
+    dependencyOverrides += "org.typelevel" %% "cats-core" % "2.9.0" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "com.ideal.linked" %% "toposoid-knowledgebase-model" % "0.7-SNAPSHOT" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "com.ideal.linked" %% "toposoid-deduction-protocol-model" % "0.7-SNAPSHOT" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "com.ideal.linked" %% "scala-common" % "0.7-SNAPSHOT" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "com.ideal.linked" %% "toposoid-common" % "0.7-SNAPSHOT" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "org.playframework" %% "play" % "3.0.7" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "com.ibm.icu" % "icu4j" % "63.1" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "commons-lang" % "commons-lang" % "2.6" exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += scalaTest % Test exclude("org.slf4j","slf4j-api"),
+    libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.36"
   )
   .enablePlugins(AutomateHeaderPlugin)
 
