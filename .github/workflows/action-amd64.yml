@@ -10,7 +10,7 @@ env:
   PJ_BRANCH: feature
   PJ_VERSION: 0.7-SNAPSHOT
 jobs:
-  unit-test_toposoid-sentence-parser-japanese:
+  unit-test_toposoid-sentence-parser-japanese-amd64:
     runs-on: ubuntu-24.04
     steps:
       - name: Clone ${{ env.PJ_REPO }}

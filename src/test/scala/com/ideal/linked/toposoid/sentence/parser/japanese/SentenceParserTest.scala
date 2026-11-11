@@ -311,8 +311,14 @@ class SentenceParserTest extends AnyFlatSpec with BeforeAndAfter with BeforeAndA
           case "２０２６年２月８日" => assert(y._2 == "DATE")
         }
       })      
-    })
-    
+    })    
+  }
+
+  "飯食う暇がない。"should "analyze correctly" in {
+    //準否定表現のチェック
+    val knowledgeForParser = KnowledgeForParser(java.util.UUID.randomUUID().toString, java.util.UUID.randomUUID().toString, Knowledge("飯食う暇がない。", "ja_JP", "{}") )
+    val o = SentenceParser.parse(knowledgeForParser)
+    assert(o._1.filter(x =>  x._2.predicateArgumentStructure.normalizedName == "無い" && x._2.predicateArgumentStructure.isDenialWord).size == 1)
   }
 
 }

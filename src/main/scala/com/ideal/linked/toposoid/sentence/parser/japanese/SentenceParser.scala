@@ -308,7 +308,7 @@ object SentenceParser extends LazyLogging {
     //rangeExpressions.foreach(a => println(a))
     val categories = x.tags.map(getCategoryOrDomain(_, "カテゴリ")).map(arr => arr._1 -> arr._2).toMap
     val domains = x.tags.map(getCategoryOrDomain(_, "ドメイン")).map(arr => arr._1 -> arr._2).toMap
-    val isDenial:Boolean = x.features.isDefinedAt("否定表現")
+    val isDenial:Boolean = x.features.isDefinedAt("否定表現") || x.features.isDefinedAt("準否定表現")
     val isConditionalConnection:Boolean = checkConditionalClause(x, surfaceYomi)
     val normalizedNameInfo =  x.features.get("正規化代表表記").getOrElse("-")
     val normalizedNameYomi = normalizedNameInfo match {
